@@ -43,6 +43,9 @@
         <li class="nav-item" data-target="view-feed">
           <i class="ph ph-newspaper"></i> News Feed
         </li>
+        <li class="nav-item" data-target="view-notes">
+          <i class="ph ph-notebook"></i> Daily Notes
+        </li>
       </ul>
     </aside>
 
@@ -51,6 +54,11 @@
 
       <!-- Top App Header -->
       <header class="app-header">
+        <div class="header-search-trigger" id="header-search-btn">
+          <i class="ph ph-magnifying-glass"></i>
+          <span>Search everything...</span>
+          <span class="search-kbd-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
+        </div>
         <div class="user-profile">
           <img src="profile.jpg" class="avatar-img" alt="BH">
           <div class="user-info">
@@ -72,6 +80,13 @@
         <div class="search-container">
           <i class="ph ph-magnifying-glass search-icon"></i>
           <input type="text" id="inventory-search" class="search-input" placeholder="Search by name, letters, numbers...">
+        </div>
+        
+        <div class="category-filters">
+          <button class="filter-btn active" data-filter="All">All</button>
+          <button class="filter-btn" data-filter="Raw">Raw</button>
+          <button class="filter-btn" data-filter="Cooler">Cooler</button>
+          <button class="filter-btn" data-filter="Paper">Paper</button>
         </div>
 
         <div id="inventory-list" class="inventory-grid">
@@ -147,6 +162,38 @@
         </div>
       </section>
 
+      <!-- ================= DAILY NOTES VIEW ================= -->
+      <section id="view-notes" class="view-section">
+        <div class="top-bar">
+          <div>
+            <h1>Daily Notes</h1>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">Post updates, attach Excel/PDF sheets, and share to WhatsApp.</p>
+          </div>
+        </div>
+
+        <div class="feed-composer glass-panel" style="margin-top: 1rem;">
+          <textarea id="note-text" rows="3" placeholder="Write a daily update..."></textarea>
+          
+          <div id="note-file-preview-container" class="file-preview-container" style="display:none; align-items:center; gap:10px; margin-bottom:10px; padding:10px; background:var(--bg-surface); border-radius:8px;">
+            <i class="ph ph-file" style="font-size:24px; color:var(--accent-color);"></i>
+            <span id="note-file-name" style="flex:1; font-size:0.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+            <button id="remove-note-file" class="btn btn-icon"><i class="ph ph-x"></i></button>
+          </div>
+
+          <div class="composer-actions" style="display:flex; justify-content:space-between; margin-top:1rem;">
+            <label class="btn btn-secondary upload-btn" style="cursor:pointer;">
+              <i class="ph ph-paperclip"></i> Attach File
+              <input type="file" id="note-file-upload" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" style="display:none;">
+            </label>
+            <button class="btn btn-primary" id="btn-post-note">Post Note</button>
+          </div>
+        </div>
+
+        <div id="notes-list" style="margin-top: 2rem; display:flex; flex-direction:column; gap:1rem;">
+          <!-- Notes will be injected here via JS -->
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -164,6 +211,9 @@
         <div class="input-group">
           <label>Category</label>
           <select id="inv-category" required>
+            <option value="Raw">Raw</option>
+            <option value="Cooler">Cooler</option>
+            <option value="Paper">Paper</option>
             <option value="FOOD & MEAT ITEMS">FOOD & MEAT ITEMS</option>
             <option value="BEVERAGES & CONDIMENTS">BEVERAGES & CONDIMENTS</option>
             <option value="CUPS, LIDS & PACKAGING (PAPER)">CUPS, LIDS & PACKAGING (PAPER)</option>
@@ -190,10 +240,11 @@
   <div class="modal-overlay" id="modal-procedure">
     <div class="modal-content glass-panel">
       <div class="modal-header">
-        <h2>Add Procedure</h2>
+        <h2 id="proc-modal-title">Add Procedure</h2>
         <button class="close-modal"><i class="ph ph-x"></i></button>
       </div>
       <form id="form-procedure">
+        <input type="hidden" id="proc-id">
         <div class="input-group">
           <label>Procedure Title</label>
           <input type="text" id="proc-title" required>
@@ -216,6 +267,75 @@
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%;">Save Procedure</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay" id="modal-task">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h2 id="task-modal-title">Add Daily Task</h2>
+        <button class="close-modal"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="form-task">
+        <div class="input-group">
+          <label>Task Title</label>
+          <input type="text" id="task-title" required placeholder="e.g. Check temperature log">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Task</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Global Search Modal (Spotlight style) -->
+  <div class="modal-overlay" id="modal-search">
+    <div class="search-modal-content glass-panel">
+      <div class="search-modal-header">
+        <i class="ph ph-magnifying-glass search-modal-icon"></i>
+        <input type="text" id="global-search-input" placeholder="Search across everything... (use Arrow keys to navigate)" autocomplete="off">
+        <button class="close-modal" id="btn-close-search"><i class="ph ph-x"></i></button>
+      </div>
+      
+      <div class="search-modal-filters">
+        <button class="search-filter-btn active" data-search-filter="All">All</button>
+        <button class="search-filter-btn" data-search-filter="Inventory">Inventory</button>
+        <button class="search-filter-btn" data-search-filter="Procedures">Procedures</button>
+        <button class="search-filter-btn" data-search-filter="Tasks">Tasks</button>
+        <button class="search-filter-btn" data-search-filter="News">News Feed</button>
+        <button class="search-filter-btn" data-search-filter="Notes">Daily Notes</button>
+      </div>
+
+      <div class="search-modal-results" id="global-search-results">
+        <div class="search-empty-state">
+          <i class="ph ph-magnifying-glass-plus"></i>
+          <p>Type to search everything (Inventory, Procedures, Tasks, Feed, Notes)...</p>
+          <span class="search-tip">Pro Tip: Search words can be in any order, e.g., "chicken box" or "soc safety"</span>
+        </div>
+      </div>
+      
+      <div class="search-modal-footer">
+        <span><kbd>↑↓</kbd> Navigate</span>
+        <span><kbd>Enter</kbd> Open / Go to item</span>
+        <span><kbd>Esc</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal (must be outside all other modals) -->
+  <div id="image-lightbox">
+    <button class="lightbox-close" id="btn-close-lightbox"><i class="ph ph-x"></i></button>
+    
+    <!-- Zoom Controls -->
+    <div class="lightbox-controls">
+      <button id="btn-zoom-out" title="Zoom Out"><i class="ph ph-minus"></i></button>
+      <span id="zoom-indicator">100%</span>
+      <button id="btn-zoom-in" title="Zoom In"><i class="ph ph-plus"></i></button>
+      <button id="btn-zoom-reset" title="Reset"><i class="ph ph-arrows-out"></i></button>
+    </div>
+
+    <!-- Image Container -->
+    <div class="lightbox-content-wrapper">
+      <img id="lightbox-img" src="" alt="Fullscreen Image">
     </div>
   </div>
 
