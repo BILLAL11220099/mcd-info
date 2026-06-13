@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Operations</title>
+  <link rel="stylesheet" href="index.css">
+  <!-- Phosphor Icons for premium UI icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+  <!-- Login Screen -->
+  <div id="login-screen">
+    <div class="login-card glass-panel">
+      <div class="login-logo">
+        <i class="ph-fill ph-hamburger"></i>
+        BILLAL HOSSEN
+      </div>
+      <p>Welcome back! Access procedures, inventory, and news feed.</p>
+      <button id="btn-login" class="btn btn-primary">Login to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Main App Layout -->
+  <div id="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="ph-fill ph-hamburger"></i> BILLAL HOSSEN
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item active" data-target="view-inventory">
+          <i class="ph ph-package"></i> Inventory
+        </li>
+        <li class="nav-item" data-target="view-procedures">
+          <i class="ph ph-book-open-text"></i> Procedures
+        </li>
+        <li class="nav-item" data-target="view-checklist">
+          <i class="ph ph-check-square"></i> Checklist
+        </li>
+        <li class="nav-item" data-target="view-feed">
+          <i class="ph ph-newspaper"></i> News Feed
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Top App Header -->
+      <header class="app-header">
+        <div class="user-profile">
+          <img src="profile.jpg" class="avatar-img" alt="BH">
+          <div class="user-info">
+            <span class="user-name">Manager Billal Hossen</span>
+            <span class="user-role">McDonald's Operations</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ================= INVENTORY VIEW ================= -->
+      <section id="view-inventory" class="view-section active">
+        <div class="top-bar">
+          <h1>Inventory Management</h1>
+          <button class="btn btn-primary" id="btn-add-inventory">
+            <i class="ph ph-plus"></i> Add Item
+          </button>
+        </div>
+        
+        <div class="search-container">
+          <i class="ph ph-magnifying-glass search-icon"></i>
+          <input type="text" id="inventory-search" class="search-input" placeholder="Search by name, letters, numbers...">
+        </div>
+
+        <div id="inventory-list" class="inventory-grid">
+          <!-- Inventory items will be injected here via JS -->
+        </div>
+      </section>
+
+      <!-- ================= PROCEDURES VIEW ================= -->
+      <section id="view-procedures" class="view-section">
+        <div class="top-bar">
+          <h1>Restaurant Procedures</h1>
+          <button class="btn btn-primary" id="btn-add-procedure">
+            <i class="ph ph-plus"></i> Add Procedure
+          </button>
+        </div>
+        
+        <div id="procedures-list" class="inventory-grid">
+          <!-- Procedures will be injected here -->
+        </div>
+      </section>
+
+      <!-- ================= CHECKLIST VIEW ================= -->
+      <section id="view-checklist" class="view-section">
+        <div class="top-bar">
+          <h1>Daily Checklist</h1>
+          <button class="btn btn-primary" id="btn-add-task">
+            <i class="ph ph-plus"></i> Add Task
+          </button>
+        </div>
+        
+        <div class="glass-panel" style="padding: 2rem;">
+          <div id="checklist-items">
+            <!-- Checklist items -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= NEWS FEED VIEW ================= -->
+      <section id="view-feed" class="view-section">
+        <div class="top-bar">
+          <h1>Company News Feed</h1>
+        </div>
+        
+        <div class="feed-container">
+          <!-- Create Post -->
+          <div class="create-post glass-panel">
+            <div class="post-header">
+              <img src="profile.jpg" class="post-avatar-img" alt="BH">
+              <div class="post-meta">
+                <h4>Manager Billal Hossen</h4>
+              </div>
+            </div>
+            <textarea id="feed-text" rows="3" placeholder="Share an update, photo, or announcement..."></textarea>
+            
+            <div id="feed-image-preview-container" class="image-preview-container">
+              <img id="feed-image-preview" class="image-preview" src="" alt="Preview">
+              <button class="remove-image" id="remove-feed-image"><i class="ph ph-x"></i></button>
+            </div>
+
+            <div class="post-actions">
+              <label class="file-upload-label">
+                <i class="ph ph-image" style="font-size: 1.5rem;"></i> Photo
+                <input type="file" id="feed-image-upload" accept="image/*">
+              </label>
+              <button class="btn btn-primary" id="btn-post-feed">Post</button>
+            </div>
+          </div>
+
+          <!-- Feed Posts -->
+          <div id="feed-posts">
+            <!-- Posts injected here -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Add/Edit Inventory Modal -->
+  <div class="modal-overlay" id="modal-inventory">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h2 id="inventory-modal-title">Add Inventory Item</h2>
+        <button class="close-modal"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="form-inventory">
+        <input type="hidden" id="inv-id">
+        <div class="input-group">
+          <label>Category</label>
+          <select id="inv-category" required>
+            <option value="FOOD & MEAT ITEMS">FOOD & MEAT ITEMS</option>
+            <option value="BEVERAGES & CONDIMENTS">BEVERAGES & CONDIMENTS</option>
+            <option value="CUPS, LIDS & PACKAGING (PAPER)">CUPS, LIDS & PACKAGING (PAPER)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Product Name</label>
+          <input type="text" id="inv-name" required>
+        </div>
+        <div class="input-group">
+          <label>Inner Details (e.g. 1 inner (40 pcs))</label>
+          <input type="text" id="inv-inner" required>
+        </div>
+        <div class="input-group">
+          <label>Case Details (e.g. 1 case (8 inner))</label>
+          <input type="text" id="inv-case" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Item</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Procedure Modal -->
+  <div class="modal-overlay" id="modal-procedure">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h2>Add Procedure</h2>
+        <button class="close-modal"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="form-procedure">
+        <div class="input-group">
+          <label>Procedure Title</label>
+          <input type="text" id="proc-title" required>
+        </div>
+        <div class="input-group">
+          <label>Description / Steps</label>
+          <textarea id="proc-desc" rows="4" required></textarea>
+        </div>
+        
+        <div id="proc-image-preview-container" class="image-preview-container">
+          <img id="proc-image-preview" class="image-preview" src="" alt="Preview">
+          <button type="button" class="remove-image" id="remove-proc-image"><i class="ph ph-x"></i></button>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 2rem;">
+          <label class="file-upload-label" style="display:inline-flex; background:var(--bg-dark); padding:0.5rem 1rem; border-radius:8px;">
+            <i class="ph ph-upload-simple"></i> Upload Photo
+            <input type="file" id="proc-image-upload" accept="image/*">
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Procedure</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs (v8 for vanilla JS) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
